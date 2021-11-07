@@ -22,8 +22,11 @@ services:
       - 9092:9092
 
   backend:
+    container_name: backend
     build:
       dockerfile: .docker/Dockerfile
+      context: .
+    env_file: ./.env
     depends_on:
       - kafka
       - akhq
