@@ -1,6 +1,5 @@
 FROM node:17
 
-
 WORKDIR /opt/node/app
 
 COPY app/package*.json ./
@@ -12,8 +11,6 @@ COPY ./app .
 
 USER node
 
-# CMD ["node", "-r", "dotenv/config", "app.js"]
-
 EXPOSE 8000
 
-ENTRYPOINT [ "/bin/bash" ]
+ENTRYPOINT [ "/bin/bash" ] 
