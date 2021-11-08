@@ -32,6 +32,6 @@ rebuild: ## rebuild backend Docker image
 	@docker-compose build --no-cache
 
 .PHONY: rebuild-full
-rebuild: ## rebuild backend Docker image and wipes volumes
+rebuild-full: ## rebuild backend Docker image and wipes volumes
 	@docker-compose down --remove-orphans
 	@docker-compose build --no-cache
