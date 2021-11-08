@@ -11,25 +11,31 @@ const kafka = new Kafka({
 });
 
 const producer = kafka.producer();
-const run = async () => {
-    // Producing
-    await producer.connect()
-    await producer.send({
-      topic: process.env.KAFKA_ORDERS_TOPIC,
-      messages: [
-        { key:"test", value:"test" },
-      ],
-    })
-}
-run().catch(console.error)
 
+async function kafka_producer(id,correo_vendedor,correo) {
+    await producer.connect();
+    await producer.send({
+        topic: process.env.KAFKA_ORDERS_TOPIC,
+        messages: [
+            { key: "Orden" , value: JSON.stringify({
+                id: id,
+                correo_vendedor: correo_vendedor,
+                correo: correo
+            }) },
+        ],
+    });
+}
 
 app.post('/', (req, res) => {
     const {id,correo_vendedor,correo} = req.body;
+    kafka_producer(id,correo_vendedor,correo);
     res.json({
-      msg: "hola",
+        id,
+        correo_vendedor,
+        correo
     });
 });
+
 app.listen(port, () => {
     console.log(`Server started! at http://localhost:${port}`);
   });
