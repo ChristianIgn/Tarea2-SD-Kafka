@@ -6,34 +6,30 @@ const port = process.env.LISTENING_PORT
 app.use(express.json());
 
 const kafka = new Kafka({
-    clientId: 'my-app',
-    brokers: ['kafka1:9092', 'kafka2:9092']
-})
+    clientId: "backend",
+    brokers: [process.env.KAFKA_BROKER],
+});
 
-const producer = kafka.producer()
+const producer = kafka.producer();
+const run = async () => {
+    // Producing
+    await producer.connect()
+    await producer.send({
+      topic: process.env.KAFKA_ORDERS_TOPIC,
+      messages: [
+        { key:"test", value:"test" },
+      ],
+    })
+}
+run().catch(console.error)
+
 
 app.post('/', (req, res) => {
     const {id,correo_vendedor,correo} = req.body;
-    
-    await producer.connect();
-    console.log(process.env.KAFKA_BROKER)
-    await producer.send({
-    topic: 'orders',
-    messages: [
-        { 
-            id,
-            correo_vendedor,
-            correo
-         },
-    ],
-    })
     res.json({
       msg: "hola",
     });
 });
-
-
-
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
+    console.log(`Server started! at http://localhost:${port}`);
+  });
