@@ -10,10 +10,10 @@ COPY .env .
 COPY ./app .
 
 # Preload dotenv
-CMD ["node", "-r", "dotenv/config", "app.js"]
+# CMD ["node", "-r", "dotenv/config", "app.js"]
 
 # se define el puerto
 EXPOSE 8000
 
 # se ejecuta el backend
-CMD [ "node", "app.js" ]
+ENTRYPOINT [ "/bin/bash" ]
