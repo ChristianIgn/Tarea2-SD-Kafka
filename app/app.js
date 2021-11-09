@@ -1,7 +1,8 @@
 const { Kafka } = require('kafkajs')
 const express = require('express')
+const { summaryParser } = require('./summaries')
+
 const app = express()
-const port = process.env.LISTENING_PORT
 
 app.use(express.json());
 
@@ -62,6 +63,8 @@ app.get('/consumer', async(req,res)=> {
   })
 })
 
-app.listen(port, () => {
-    console.log(`Server started! at http://localhost:${port}`);
+
+app.listen(process.env.LISTENING_PORT, () => {
+    console.log(`Server started! at http://localhost:${process.env.LISTENING_PORT}`);
+    summaryParser().catch(e => console.error(e.message));
   });
