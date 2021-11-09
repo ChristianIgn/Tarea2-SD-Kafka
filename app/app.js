@@ -1,8 +1,7 @@
 const { Kafka } = require('kafkajs')
 const express = require('express')
-const { summaryParser } = require('./summaries')
-
 const app = express()
+const port = process.env.LISTENING_PORT
 
 app.use(express.json());
 
@@ -26,9 +25,10 @@ async function kafka_producer(id,correo_vendedor,correo,cantidad) {
             }) },
         ],
     });
+    await producer.disconnect()
 }
 
-app.post('/producer', (req, res) => {
+app.post('/producer', async (req, res) => {
     const {id,correo_vendedor,correo,cantidad} = req.body;
     kafka_producer(id,correo_vendedor,correo,cantidad);
     res.json({
@@ -41,30 +41,42 @@ app.post('/producer', (req, res) => {
 
 const consumer = kafka.consumer({ groupId: "backend" })
 
-app.get('/consumer', async(req,res)=> {
-  let suma = 0;
-  const consumer = await kafka.consumer({ groupId: "backend" })
-  await consumer.connect()
-  await consumer.subscribe({
-    topic: process.env.KAFKA_ORDERS_TOPIC,
-    fromBeginning: true
-  })
-  await consumer.run({
-    eachMessage: async ({ topic, partition, message }) => {
-      const {cantidad,correo_vendedor} = JSON.parse(message.value.toString())
-      console.log('Received message', {
-        topic,
-        partition,
-        key: message.key.toString(),
-        cantidad,
-        correo_vendedor
-      })
-    }
-  })
+let consumidos = [];
+
+const run = async () => {
+    // Consuming
+    await consumer.connect()
+    await consumer.subscribe({
+        topic: process.env.KAFKA_ORDERS_TOPIC,
+        fromBeginning: true
+    })
+    await consumer.run({
+        eachMessage: async ({ topic, partition, message }) => {
+            consumidos.push(JSON.parse(message.value.toString())
+            )
+        }
+    })
+}
+run().catch(console.error)
+
+app.get('/consumer', (req,res)=> {
+    let suma = 0;
+    consumidos.forEach(element => {
+        console.log(element)
+        suma += Number(element.cantidad);
+        let cantidad = element.cantidad
+        let correo_vendedor = element.correo_vendedor
+        console.log({
+            cantidad,
+            correo_vendedor
+        })
+        consumidos = [];
+    });
+    res.json({
+        suma
+    })
 })
 
-
-app.listen(process.env.LISTENING_PORT, () => {
-    console.log(`Server started! at http://localhost:${process.env.LISTENING_PORT}`);
-    summaryParser().catch(e => console.error(e.message));
-  });
+app.listen(port, () => {
+    console.log(`Server started! at http://localhost:${port}`);
+});

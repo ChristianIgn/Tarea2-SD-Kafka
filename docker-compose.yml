@@ -25,6 +25,7 @@ services:
     container_name: backend
     build:
       dockerfile: .docker/Dockerfile
+      context: .
     volumes:
       - ./app:/usr/src/app
       - ./.env:/usr/src/app/.env
