@@ -41,11 +41,8 @@ app.post('/producer', (req, res) => {
 const consumer = kafka.consumer({ groupId: "backend" })
 
 app.get('/consumer', async(req,res)=> {
-  const consumer1 = await kafka.consumer({ groupId: "backend" })
-  main(consumer1);
-})
-
-const main = async (consumer) => {
+  let suma = 0;
+  const consumer = await kafka.consumer({ groupId: "backend" })
   await consumer.connect()
   await consumer.subscribe({
     topic: process.env.KAFKA_ORDERS_TOPIC,
@@ -53,15 +50,17 @@ const main = async (consumer) => {
   })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
+      const {cantidad,correo_vendedor} = JSON.parse(message.value.toString())
       console.log('Received message', {
         topic,
         partition,
         key: message.key.toString(),
-        value: message.value.toString()
+        cantidad,
+        correo_vendedor
       })
     }
   })
-}
+})
 
 app.listen(port, () => {
     console.log(`Server started! at http://localhost:${port}`);
