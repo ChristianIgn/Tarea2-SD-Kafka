@@ -9,22 +9,21 @@ const kafka = new Kafka({
 const producer = kafka.producer();
 const consumer = kafka.consumer({ groupId: process.env.KAFKA_CONSUMER_GROUP });
 
-const ordersParser = async (callback) => {
+const consumeMessages = async (ordersCallback, summariesCallback) => {
     await consumer.connect()
     await consumer.subscribe({ topic: process.env.KAFKA_ORDERS_TOPIC })
-    await consumer.run({
-        eachMessage: async ({ message }) => {
-            callback(JSON.parse(message.value.toString()))
-        }
-    })
-}
-
-const summaryParser = async (callback) => {
-    await consumer.connect()
     await consumer.subscribe({ topic: process.env.KAFKA_SUMMARIES_TOPIC })
     await consumer.run({
-        eachMessage: async ({ message }) => {
-            callback(JSON.parse(message.value.toString()))
+        eachMessage: async ({topic, message}) => {
+            const parsedMessage = JSON.parse(message.value.toString())
+
+            if(topic === process.env.KAFKA_ORDERS_TOPIC){
+                ordersCallback(parsedMessage)
+            }else if(topic === process.env.KAFKA_SUMMARIES_TOPIC){
+                summariesCallback(parsedMessage)
+            }else{
+                console.log(`Message received without callback, TOPIC: ${topic}`);
+            }
         }
     })
 }
@@ -38,4 +37,4 @@ const sendMessages = async (topic, messages) => {
     await producer.disconnect()
 }
 
-module.exports = { ordersParser, summaryParser, sendMessages };
+module.exports = { consumeMessages, sendMessages };

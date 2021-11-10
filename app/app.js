@@ -1,5 +1,5 @@
 const express = require('express');
-const { summaryParser, ordersParser, sendMessages } = require('./kafka_handlers');
+const { consumeMessages, sendMessages } = require('./kafka_handlers');
 const { sendEmail } = require('./emailer');
 const app = express()
 
@@ -13,13 +13,13 @@ app.post('/producer', async (req, res) => {
         correo: correo,
         cantidad: cantidad,
     })
-    sendMessages(process.env.KAFKA_ORDERS_TOPIC, [{value: message}]);
+    sendMessages(process.env.KAFKA_ORDERS_TOPIC, [{value: message}])
     res.json({
         id,
         correo_vendedor,
         correo,
         cantidad
-    });
+    })
 });
 
 
@@ -27,6 +27,7 @@ let consumidos = [];
 
 
 app.get('/consumer', (req,res)=> {
+    console.log(consumidos);
     let suma = 0;
     consumidos.forEach(element => {
         console.log(element)
@@ -46,7 +47,9 @@ app.get('/consumer', (req,res)=> {
 
 app.listen(process.env.LISTENING_PORT, () => {
     console.log(`Server started! at http://localhost:${process.env.LISTENING_PORT}`);
-    
-    ordersParser(order => consumidos.push(order)).catch(e => console.log(e));
-    summaryParser(summary => sendEmail(summary)).catch(e => console.log(e));
+
+    consumeMessages(
+        (order) => consumidos.push(order),
+        (summary) => sendEmail(summary)
+    );
 });
