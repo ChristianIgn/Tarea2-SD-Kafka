@@ -15,6 +15,17 @@ Ejecutar el comando `make up` iniciará el projecto en docker y levantará dos e
 127.0.0.1:8000 Servidor web que consume y produce eventos en Kafka.
 127.0.0.1:8080 AKHQ, plataforma de monitoreo de los eventos de Kafka.
 ```
+### Configuraciones
+Para poder enviar emails a través de este sistema se requieren ingresar ciertas credenciales en el archivo [.env](app/.env). Las configuraciones a ingresar son:
+
+| Variable | Default | Descripcion |
+| --- | --- | --- |
+| NODEMAILER_SMTP_HOST | | Host del servidor SMTP |
+| NODEMAILER_SMTP_PORT | | Puerto del servidor SMTP |
+| NODEMAILER_AUTH_USERNAME | | Usuario del servidor SMTP |
+| NODEMAILER_AUTH_PASSWORD | | Password del servidor SMTP |
+| NODEMAILER_DEFAULT_ADDRESS | `noreply@tarea.kafka.com` | Direccion de correo donde se envian los mails|
+
 
 Para probar el programa, se recomienda ejecutar el ingreso de ordenes, realizando un post a la ruta:
 
