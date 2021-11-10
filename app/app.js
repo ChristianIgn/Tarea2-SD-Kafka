@@ -23,7 +23,6 @@ app.post('/producer', async (req, res) => {
         correo,
         cantidad
     })
-    console.log(consumidos)
 });
 
 
@@ -38,7 +37,6 @@ app.get('/consumer/:correo', async(req,res)=> {
             let cantidad = consumidos[i].cantidad;
             let correo_vendedor = consumidos[i].correo_vendedor;
             consumidos.splice(i,1);
-            console.log(suma);
         }
         else{
             i++;
@@ -49,7 +47,6 @@ app.get('/consumer/:correo', async(req,res)=> {
         orders: suma
     })
     mensajes.push(data);
-    console.log(mensajes);
     res.json({
         correo,
         suma
