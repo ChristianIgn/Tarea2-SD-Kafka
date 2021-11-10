@@ -14,7 +14,7 @@ const sendEmail = async (summary) => {
     const orders = summary["orders"]
 
     var mailOptions = {
-        from: "example@example.com",
+        from: process.env.NODEMAILER_DEFAULT_ADDRESS,
         to: email,
         subject: "Reporte diario",
         body: `Hola!\n\nSe han realizado ${orders} ordenes durante este periodo.`,
