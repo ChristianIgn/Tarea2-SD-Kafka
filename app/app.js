@@ -42,8 +42,13 @@ app.get('/consumer/:correo', async(req,res)=> {
             i++;
         }
     }
-
+    message = JSON.stringify({
+        email: correo,
+        orders: suma
+    })
+    sendMessages(process.env.KAFKA_SUMMARIES_TOPIC, [{value: message}])
     res.json({
+        correo,
         suma
     })
 })
