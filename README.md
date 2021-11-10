@@ -7,6 +7,7 @@ Para instalar este projecto se require los siguientes prerequisitos:
 
 * Docker
 * make
+nota: usualmente los sistemas linux tienen instalado make por defecto.
 
 Ejecutar el comando `make up` iniciará el projecto en docker y levantará dos endpoints principales:
 
@@ -15,6 +16,25 @@ Ejecutar el comando `make up` iniciará el projecto en docker y levantará dos e
 127.0.0.1:8080 AKHQ, plataforma de monitoreo de los eventos de Kafka.
 ```
 
+Para probar el programa, se recomienda ejecutar el ingreso de ordenes, realizando un post a la ruta:
+
+`http://localhost:8000/producer`
+
+Ejemplo de post, con postman, usando raw JSON:
+{
+      "correo_vendedor": "ejemplo@gmail.com",
+      "correo": "ejemplo@gmail.com",
+      "cantidad": "50"
+}
+
+Para que el topico summaries consuma los datos de las ordenes de un vendedor/cocinero, realizar un get 
+especificando el correo del vendedor:
+
+`http://localhost:8000/consumer/ejemplo@gmail.com`
+
+Para enviar por correo el resumen diario, realizar el siguiente get:
+
+`http://localhost:8000/daily`
 
 El listado completo de comandos se puede ver con `make help`.
 

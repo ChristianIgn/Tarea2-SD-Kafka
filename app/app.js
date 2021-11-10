@@ -5,25 +5,26 @@ const app = express()
 
 app.use(express.json());
 
+
+let consumidos = [];
+let mensajes = [];
+
+
 app.post('/producer', async (req, res) => {
-    const {id,correo_vendedor,correo,cantidad} = req.body;
+    const {correo_vendedor,correo,cantidad} = req.body;
     message = JSON.stringify({
-        id: id,
         correo_vendedor: correo_vendedor,
         correo: correo,
         cantidad: cantidad,
     })
     sendMessages(process.env.KAFKA_ORDERS_TOPIC, [{value: message}])
     res.json({
-        id,
         correo_vendedor,
         correo,
         cantidad
     })
+    console.log(consumidos)
 });
-
-
-let consumidos = [];
 
 
 app.get('/consumer/:correo', async(req,res)=> {
@@ -37,19 +38,33 @@ app.get('/consumer/:correo', async(req,res)=> {
             let cantidad = consumidos[i].cantidad;
             let correo_vendedor = consumidos[i].correo_vendedor;
             consumidos.splice(i,1);
+            console.log(suma);
         }
         else{
             i++;
         }
     }
-    message = JSON.stringify({
+    data = JSON.stringify({
         email: correo,
         orders: suma
     })
-    sendMessages(process.env.KAFKA_SUMMARIES_TOPIC, [{value: message}])
+    mensajes.push(data);
+    console.log(mensajes);
     res.json({
         correo,
         suma
+    })
+})
+
+app.get('/daily', async(req,res)=> {
+    let i=0;
+    while(i<mensajes.length){
+        sendMessages(process.env.KAFKA_SUMMARIES_TOPIC, [{value: mensajes[i]}])
+        i++;
+    }
+    mensajes = [];
+    res.json({
+        mensajes
     })
 })
 
