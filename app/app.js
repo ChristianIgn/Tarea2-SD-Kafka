@@ -26,18 +26,23 @@ app.post('/producer', async (req, res) => {
 let consumidos = [];
 
 
-app.get('/consumer', (req,res)=> {
+app.get('/consumer/:correo', (req,res)=> {
+    const correo = req.params.correo;
+    console.log(correo);
     console.log(consumidos);
     let suma = 0;
     consumidos.forEach(element => {
+        const filtered = array.filter(function(element){
+        if (element.correo_vendedor === correo){
         console.log(element)
-        suma += Number(element.cantidad);
-        let cantidad = element.cantidad
-        let correo_vendedor = element.correo_vendedor
-        console.log({
+          suma += Number(element.cantidad);
+          let cantidad = element.cantidad
+          let correo_vendedor = element.correo_vendedor
+          console.log({
             cantidad,
             correo_vendedor
         })
+        }
         consumidos = [];
     });
     res.json({
