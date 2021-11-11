@@ -1,5 +1,6 @@
 # Tarea2-SD-Kafka
 
+GRUPO: Ríos Tobar Tapia
 
 ## Instalación
 
